@@ -57,8 +57,12 @@ app.use(((err, _req, res, _next) => {
   });
 }) as ErrorRequestHandler);
 
-const server = app.listen(8000, () => {
-  consola.success(`Server listening on port 8000 in ${Bun.env.NODE_ENV} mode`);
+const port = Bun.env.PORT;
+
+const server = app.listen(port, () => {
+  consola.success(
+    `Server listening on port ${port} in ${Bun.env.NODE_ENV} mode`
+  );
 });
 
 process.on("SIGINT", async () => {

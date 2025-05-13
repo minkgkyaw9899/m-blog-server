@@ -1,4 +1,6 @@
-FROM oven/bun:latest
+FROM oven/bun:alpine
+
+RUN apk add --no-cache openssl3 
 
 WORKDIR /app
 
@@ -8,7 +10,7 @@ RUN bun install
 
 COPY . .
 
-# COPY .env.production .env
-EXPOSE 5000
+RUN bunx prisma generate
+
 
 CMD [ "bun", "src/index.ts" ]
