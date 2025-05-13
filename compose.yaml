@@ -15,23 +15,23 @@ services:
       timeout: 5s
       retries: 5
 
-  # api:
-  #   build: .
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  #   environment:
-  #     DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-  #     # Add other environment variables your Node.js app needs
-  #     NODE_ENV: production
-  #   ports:
-  #     - "3000:3000"
-  #   restart: on-failure
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:3000/"] # Replace with your app's health check endpoint
-  #     interval: 5s
-  #     timeout: 5s
-  #     retries: 5
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      # Add other environment variables your Node.js app needs
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"] # Replace with your app's health check endpoint
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   db_data:
