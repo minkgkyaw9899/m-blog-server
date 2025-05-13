@@ -1,3 +1,5 @@
+# networks:
+#   breeze_network:
 services:
   db:
     image: postgres:alpine
@@ -8,30 +10,34 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data/
     ports:
-      - "5432:5432" # Optional: Expose PostgreSQL port for direct access (not recommended for production)
+      - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
+    # networks:
+    #   - breeze_network
 
-  api:
-    build: .
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      # Add other environment variables your Node.js app needs
-      NODE_ENV: production
-    ports:
-      - "8000:8000"
-    restart: on-failure
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health-check"] # Replace with your app's health check endpoint
-      interval: 5s
-      timeout: 5s
-      retries: 5
+  # api:
+  #   build: .
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   environment:
+  #     DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+  #     # Add other environment variables your Node.js app needs
+  #     NODE_ENV: production
+  #   ports:
+  #     - "8000:8000"
+  #   restart: on-failure
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health-check"] # Replace with your app's health check endpoint
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 5
+  #   networks:
+  #     - breeze_network
 
 volumes:
   db_data:

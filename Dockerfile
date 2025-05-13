@@ -10,7 +10,8 @@ RUN bun install
 
 COPY . .
 
-RUN bunx prisma generate
+COPY .env.production .env
 
+# RUN bunx prisma db pull
 
 CMD [ "bun", "src/index.ts" ]
