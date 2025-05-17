@@ -1,5 +1,4 @@
-import { PrismaClient } from "../generated/prisma";
+import "dotenv/config";
+import { drizzle } from "drizzle-orm/node-postgres";
 
-const db = new PrismaClient();
-
-export default db;
+export const db = drizzle(Bun.env.DATABASE_URL!);

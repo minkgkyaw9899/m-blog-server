@@ -4,25 +4,38 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "db:push": "bunx drizzle-kit push",
+    "db:generate": "npx drizzle-kit generate",
+    "db:migrate": "npx drizzle-kit migrate",
+    "studio": "bunx drizzle-kit studio",
     "dev": "bun --watch src/index.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/cors": "^2.8.18",
+    "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.1",
     "@types/http-errors": "^2.0.4",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/lodash": "^4.17.16",
     "@types/morgan": "^1.9.9",
-    "prisma": "^6.7.0"
+    "@types/pg": "^8.15.2",
+    "drizzle-kit": "^0.31.1",
+    "tsx": "^4.19.4"
   },
   "peerDependencies": {
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@prisma/client": "^6.7.0",
+    "@prisma/client": "^6.8.1",
+    "@typescript-eslint/eslint-plugin": "^8.32.1",
+    "@typescript-eslint/parser": "^8.32.1",
     "consola": "^3.4.2",
     "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "drizzle-orm": "^0.43.1",
+    "drizzle-zod": "^0.7.1",
+    "eslint-plugin-drizzle": "^0.2.3",
     "express": "^5.1.0",
     "express-rate-limit": "^7.5.0",
     "helmet": "^8.1.0",
@@ -30,6 +43,7 @@
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
+    "pg": "^8.16.0",
     "zod": "^3.24.4"
   }
 }

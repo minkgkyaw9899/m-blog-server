@@ -171,7 +171,7 @@ export const likePostController = async (
   try {
     const userId = req.user?.id;
 
-    const post = await postFinder(req, next);
+    const post = await postFinder(req, next, true);
 
     if (!post) return next(createHttpError(404, "post not found"));
 

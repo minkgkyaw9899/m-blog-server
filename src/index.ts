@@ -4,12 +4,12 @@ import createHttpError from "http-errors";
 import cors from "cors";
 import morgan from "morgan";
 import helmet from "helmet";
-import db from "./db";
 import rateLimit from "express-rate-limit";
 import { responseFormatter } from "./utils/responseFormatter";
 import authRouter from "./features/auth/auth.routes";
 import postAuth from "./features/post/post.routes";
 import { deserializeUser } from "./middlewares/deserializeUser";
+import { db } from "./db";
 
 const app = express();
 
@@ -67,7 +67,6 @@ const server = app.listen(port, () => {
 
 process.on("SIGINT", async () => {
   consola.info("Shutting down server");
-  await db.$disconnect();
   server.close();
   process.exit(0);
 });

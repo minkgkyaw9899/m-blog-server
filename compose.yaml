@@ -1,43 +1,67 @@
-# networks:
-#   breeze_network:
 services:
   db:
     image: postgres:alpine
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    volumes:
-      - db_data:/var/lib/postgresql/data/
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: m_blog_server
     ports:
       - "5432:5432"
+    networks:
+      - breeze-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       interval: 5s
-      timeout: 5s
-      retries: 5
-    # networks:
-    #   - breeze_network
+      timeout: 2s
+      retries: 20
+    volumes:
+      - db_data:/var/lib/postgresql/data/
+    command: postgres -c listen_addresses='*'
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
 
-  # api:
-  #   build: .
+  # prisma-studio:
+  #   image: oven/bun:alpine
+  #   working_dir: /usr/src/app
+  #   volumes:
+  #     - .:/usr/src/app
+  #   command: bunx prisma studio --port 5555 --browser none
+  #   ports:
+  #     - "5555:5555"
+  #   env_file:
+  #     - .env.production
+  #   networks:
+  #     - breeze-network
   #   depends_on:
   #     db:
   #       condition: service_healthy
-  #   environment:
-  #     DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-  #     # Add other environment variables your Node.js app needs
-  #     NODE_ENV: production
+  #     server:
+  #       condition: service_started
+
+  # server:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
   #   ports:
   #     - "8000:8000"
-  #   restart: on-failure
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health-check"] # Replace with your app's health check endpoint
-  #     interval: 5s
-  #     timeout: 5s
-  #     retries: 5
+  #   volumes:
+  #     - ./:/app # Mount your local 'app' directory to '/app' in the container
+  #   command: bun dev
+  #   stdin_open: true
+  #   tty: true # Keeps the container running for debugging
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   env_file:
+  #     - .env.production
   #   networks:
-  #     - breeze_network
+  #     - breeze-network
 
 volumes:
   db_data:
+
+networks:
+  breeze-network:
+    driver: bridge

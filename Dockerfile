@@ -1,6 +1,8 @@
-FROM oven/bun:alpine
+FROM oven/bun:latest
 
-RUN apk add --no-cache openssl3 
+RUN apt update && apt install -y openssl
+
+RUN apt install openssl
 
 WORKDIR /app
 
@@ -10,8 +12,4 @@ RUN bun install
 
 COPY . .
 
-COPY .env.production .env
-
-# RUN bunx prisma db pull
-
-CMD [ "bun", "src/index.ts" ]
+CMD ["sh", "-c", "bun db:deploy && bun dev"]

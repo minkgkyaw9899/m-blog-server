@@ -1,27 +1,32 @@
-import db from "../../db";
+import { eq } from "drizzle-orm";
+import { db } from "../../db";
+import { userInsertSchema, usersTable } from "../../db/schemas/usersTable";
 import type { SignUpField } from "./auth.schema";
 
 export const findUserByEmail = async (email: string) => {
   try {
-    await db.$connect();
     if (!email) throw new Error("Email is required");
-    return await db.user.findUnique({ where: { email } });
+    const user = await db
+      .selectDistinct()
+      .from(usersTable)
+      .where(eq(usersTable.email, email))
+      .limit(1)
+      .execute();
+
+    return user?.[0];
   } catch (error) {
     throw error;
-  } finally {
-    await db.$disconnect();
   }
 };
 
 export const createUser = async (
   data: Omit<SignUpField, "confirmPassword" | "avatar">
 ) => {
-  try {
-    await db.$connect();
-    return await db.user.create({ data });
-  } catch (error) {
-    throw error;
-  } finally {
-    await db.$disconnect();
-  }
+  const savedData = await userInsertSchema.parseAsync(data);
+  const user = await db
+    .insert(usersTable)
+    .values(savedData)
+    .returning()
+    .execute();
+  return user?.[0];
 };
