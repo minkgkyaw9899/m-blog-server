@@ -1,5 +1,7 @@
 FROM oven/bun:latest
 
+RUN apt update && apt upgrade -y
+
 WORKDIR /app
 
 COPY package.json ./
@@ -8,4 +10,6 @@ RUN bun install
 
 COPY . .
 
-CMD ["sh", "-c", "bun db:generate && bun db:push && bun dev"]
+RUN chmod +x ./script.sh
+
+CMD ["bun dev", "sh script.sh"]

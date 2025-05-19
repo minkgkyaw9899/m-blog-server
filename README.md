@@ -1,17 +1,9 @@
-# mblogsserver
-
-To install dependencies:
-
 ```bash
-bun install
+# give permission to script file only one time
+chmod +x ./scripts/init.sh
 ```
 
-To run:
-
 ```bash
-bun prisma generate
-bun prisma db push
-bun dev
+docker compose up -d
+./script.sh
 ```
-
-This project was created using `bun init` in bun v1.2.12. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
