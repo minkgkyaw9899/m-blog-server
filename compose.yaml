@@ -22,42 +22,24 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # prisma-studio:
-  #   image: oven/bun:alpine
-  #   working_dir: /usr/src/app
-  #   volumes:
-  #     - .:/usr/src/app
-  #   command: bunx prisma studio --port 5555 --browser none
-  #   ports:
-  #     - "5555:5555"
-  #   env_file:
-  #     - .env.production
-  #   networks:
-  #     - breeze-network
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  #     server:
-  #       condition: service_started
-
-  # server:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8000:8000"
-  #   volumes:
-  #     - ./:/app # Mount your local 'app' directory to '/app' in the container
-  #   command: bun dev
-  #   stdin_open: true
-  #   tty: true # Keeps the container running for debugging
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  #   env_file:
-  #     - .env.production
-  #   networks:
-  #     - breeze-network
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app # Mount your local 'app' directory to '/app' in the container
+    command: bun dev
+    stdin_open: true
+    tty: true # Keeps the container running for debugging
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env.production
+    networks:
+      - breeze-network
 
 volumes:
   db_data:

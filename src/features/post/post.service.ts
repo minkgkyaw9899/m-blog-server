@@ -14,8 +14,6 @@ export const countPosts = async () => {
     return await db.$count(postTables, isNull(postTables.deletedAt));
   } catch (err) {
     throw err;
-  } finally {
-    await db.$client.end();
   }
 };
 
@@ -25,8 +23,6 @@ export const countLikes = async (postId: number) => {
     return await db.$count(likesTable, eq(likesTable.postId, postId));
   } catch (err) {
     throw err;
-  } finally {
-    await db.$client.end();
   }
 };
 
@@ -36,26 +32,24 @@ export const countComments = async (postId: number) => {
     return await db.$count(commentsTable, eq(commentsTable.postId, postId));
   } catch (err) {
     throw err;
-  } finally {
-    await db.$client.end();
   }
 };
 
+// created
+
 export const createOnePost = async (body: CreatePostField, userId: number) => {
   try {
-    await db.$client.connect();
-
-    return await db
+    const user = await db
       .insert(postTables)
       .values({
         ...body,
         authorId: userId,
       })
       .returning();
+
+    return user?.[0];
   } catch (err) {
     throw err;
-  } finally {
-    await db.$client.end();
   }
 };
 
@@ -69,7 +63,6 @@ export const findAllPosts = async ({
   userId,
 }: FinedAllPostsParam) => {
   try {
-    await db.$client.connect();
     return await db
       .select({})
       .from(postTables)
@@ -91,8 +84,6 @@ export const findPost = async ({
     return await db.select().from(postTables).where(eq(postTables.id, postId));
   } catch (err) {
     throw err;
-  } finally {
-    await db.$client.end();
   }
 };
 
@@ -106,8 +97,6 @@ export const updatePost = async (id: number, body: UpdatePostField) => {
       .returning();
   } catch (err) {
     throw err;
-  } finally {
-    await db.$client.end();
   }
 };
 
@@ -121,8 +110,6 @@ export const deletePost = async (id: number) => {
       .returning();
   } catch (err) {
     throw err;
-  } finally {
-    await db.$client.end();
   }
 };
 
@@ -132,103 +119,103 @@ type LikePostParam = {
   showDel?: boolean;
 };
 
-export const likePost = async ({ postId, userId }: LikePostParam) => {
-  try {
-    await db.$client.connect();
-    return await db.update(likesTable).set({ postId, userId }).returning();
-  } catch (err) {
-    throw err;
-  } finally {
-    await db.$client.end();
-  }
-};
+// export const likePost = async ({ postId, userId }: LikePostParam) => {
+//   try {
+//     await db.$client.connect();
+//     return await db.update(likesTable).set({ postId, userId }).returning();
+//   } catch (err) {
+//     throw err;
+//   } finally {
+//     await db.$client.end();
+//   }
+// };
 
-export const unlikePost = async ({ postId, userId }: LikePostParam) => {
-  try {
-    await db.$client.connect();
-    return await db
-      .delete(likesTable)
-      .where(and(eq(likesTable.postId, postId), eq(likesTable.userId, userId)))
-      .returning();
-  } catch (err) {
-    throw err;
-  } finally {
-    await db.$client.end();
-  }
-};
+// export const unlikePost = async ({ postId, userId }: LikePostParam) => {
+//   try {
+//     await db.$client.connect();
+//     return await db
+//       .delete(likesTable)
+//       .where(and(eq(likesTable.postId, postId), eq(likesTable.userId, userId)))
+//       .returning();
+//   } catch (err) {
+//     throw err;
+//   } finally {
+//     await db.$client.end();
+//   }
+// };
 
-export const isLiked = async ({ userId, postId }: LikePostParam) => {
-  try {
-    await db.$client.connect();
-    return await db
-      .select()
-      .from(likesTable)
-      .where(and(eq(likesTable.userId, userId), eq(likesTable.postId, postId)));
-  } catch (err) {}
-};
+// export const isLiked = async ({ userId, postId }: LikePostParam) => {
+//   try {
+//     await db.$client.connect();
+//     return await db
+//       .select()
+//       .from(likesTable)
+//       .where(and(eq(likesTable.userId, userId), eq(likesTable.postId, postId)));
+//   } catch (err) {}
+// };
 
-export const findAllComments = async (postId: number) => {
-  try {
-    await db.$client.connect();
-    return await db
-      .select()
-      .from(commentsTable)
-      .where(eq(commentsTable.postId, postId));
-  } catch (err) {
-    throw err;
-  } finally {
-    await db.$client.end();
-  }
-};
+// export const findAllComments = async (postId: number) => {
+//   try {
+//     await db.$client.connect();
+//     return await db
+//       .select()
+//       .from(commentsTable)
+//       .where(eq(commentsTable.postId, postId));
+//   } catch (err) {
+//     throw err;
+//   } finally {
+//     await db.$client.end();
+//   }
+// };
 
-type CreateCommentParam = {
-  postId: number;
-  userId: number;
-  comment: string;
-};
+// type CreateCommentParam = {
+//   postId: number;
+//   userId: number;
+//   comment: string;
+// };
 
-export const createComment = async ({
-  postId,
-  userId,
-  comment,
-}: CreateCommentParam) => {
-  try {
-    await db.$client.connect();
-    return await db
-      .insert(commentsTable)
-      .values({ comment, postId, userId })
-      .returning();
-  } catch (err) {
-    throw err;
-  } finally {
-    await db.$client.end();
-  }
-};
+// export const createComment = async ({
+//   postId,
+//   userId,
+//   comment,
+// }: CreateCommentParam) => {
+//   try {
+//     await db.$client.connect();
+//     return await db
+//       .insert(commentsTable)
+//       .values({ comment, postId, userId })
+//       .returning();
+//   } catch (err) {
+//     throw err;
+//   } finally {
+//     await db.$client.end();
+//   }
+// };
 
-type DeleteCommentParam = {
-  commentId: number;
-  postId: number;
-  userId: number;
-};
+// type DeleteCommentParam = {
+//   commentId: number;
+//   postId: number;
+//   userId: number;
+// };
 
-export const deleteComment = async ({
-  commentId,
-  postId,
-  userId,
-}: DeleteCommentParam) => {
-  try {
-    await db.$client.connect();
-    return await db
-      .delete(commentsTable)
-      .where(eq(commentsTable.id, commentId))
-      .returning();
-  } catch (err) {
-    throw err;
-  } finally {
-    await db.$client.end();
-  }
-};
+// export const deleteComment = async ({
+//   commentId,
+//   postId,
+//   userId,
+// }: DeleteCommentParam) => {
+//   try {
+//     await db.$client.connect();
+//     return await db
+//       .delete(commentsTable)
+//       .where(eq(commentsTable.id, commentId))
+//       .returning();
+//   } catch (err) {
+//     throw err;
+//   } finally {
+//     await db.$client.end();
+//   }
+// };
 
-type UpdateCommentParam = DeleteCommentParam & {
-  comment: string;
-};
+// type UpdateCommentParam = DeleteCommentParam & {
+//   comment: string;
+// };

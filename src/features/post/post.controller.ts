@@ -7,9 +7,6 @@ import {
   deletePost,
   findAllPosts,
   findPost,
-  isLiked,
-  likePost,
-  unlikePost,
   updatePost,
 } from "./post.service";
 import {
@@ -64,7 +61,6 @@ export const getAllPostController = async (
 
     const posts = allPosts.map((post) => ({
       ...omit(post, ["likes"]),
-      isLiked: post.likes.length > 0 ? true : false,
     }));
 
     const response = paginatedResponseFormatter(
@@ -109,11 +105,11 @@ export const getPostController = async (
 
     if (!post) return next(createHttpError(404, "post not found"));
 
-    const isLiked = post?.likes.length > 0 ? true : false;
+    // const isLiked = post?.likes.length > 0 ? true : false;
 
     const response = responseFormatter(200, "Successfully get post", {
       ...omit(post, ["likes"]),
-      isLiked,
+      // isLiked,
     });
 
     res.status(200).json(response);
@@ -122,101 +118,101 @@ export const getPostController = async (
   }
 };
 
-export const updatePostController = async (
-  req: Request<ParamIdField, unknown, UpdatePostField>,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const post = await postFinder(req, next);
+// export const updatePostController = async (
+//   req: Request<ParamIdField, unknown, UpdatePostField>,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const post = await postFinder(req, next);
 
-    if (!post) return next(createHttpError(404, "post not found"));
+//     if (!post) return next(createHttpError(404, "post not found"));
 
-    const { title, content } = req.body;
-    const updatedPost = await updatePost(post.id, { title, content });
-    const response = responseFormatter(
-      200,
-      "Successfully update post",
-      updatedPost
-    );
+//     const { title, content } = req.body;
+//     const updatedPost = await updatePost(post.id, { title, content });
+//     const response = responseFormatter(
+//       200,
+//       "Successfully update post",
+//       updatedPost
+//     );
 
-    res.status(200).json(response);
-  } catch (err) {
-    next(err);
-  }
-};
+//     res.status(200).json(response);
+//   } catch (err) {
+//     next(err);
+//   }
+// };
 
-export const deletePostController = async (
-  req: Request<ParamIdField, unknown, unknown>,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const post = await postFinder(req, next);
-    if (!post) return next(createHttpError(404, "post not found"));
+// export const deletePostController = async (
+//   req: Request<ParamIdField, unknown, unknown>,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const post = await postFinder(req, next);
+//     if (!post) return next(createHttpError(404, "post not found"));
 
-    await deletePost(post.id);
+//     await deletePost(post.id);
 
-    res.status(204).end();
-  } catch (err) {
-    next(err);
-  }
-};
+//     res.status(204).end();
+//   } catch (err) {
+//     next(err);
+//   }
+// };
 
-export const likePostController = async (
-  req: Request<ParamIdField, unknown, unknown>,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const userId = req.user?.id;
+// export const likePostController = async (
+//   req: Request<ParamIdField, unknown, unknown>,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const userId = req.user?.id;
 
-    const post = await postFinder(req, next, true);
+//     const post = await postFinder(req, next, true);
 
-    if (!post) return next(createHttpError(404, "post not found"));
+//     if (!post) return next(createHttpError(404, "post not found"));
 
-    const isAlreadyLiked = await isLiked({ postId: post.id, userId: +userId! });
-    if (isAlreadyLiked) return next(createHttpError(400, "Already liked"));
+//     const isAlreadyLiked = await isLiked({ postId: post.id, userId: +userId! });
+//     if (isAlreadyLiked) return next(createHttpError(400, "Already liked"));
 
-    const updatedPost = await likePost({ postId: post.id, userId: +userId! });
+//     const updatedPost = await likePost({ postId: post.id, userId: +userId! });
 
-    const response = responseFormatter(
-      200,
-      "Successfully like post",
-      updatedPost
-    );
-    res.status(200).json(response).end();
-  } catch (err) {
-    next(err);
-  }
-};
+//     const response = responseFormatter(
+//       200,
+//       "Successfully like post",
+//       updatedPost
+//     );
+//     res.status(200).json(response).end();
+//   } catch (err) {
+//     next(err);
+//   }
+// };
 
-export const unLikePostController = async (
-  req: Request<ParamIdField, unknown, unknown>,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const id = req.params.id;
+// export const unLikePostController = async (
+//   req: Request<ParamIdField, unknown, unknown>,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const id = req.params.id;
 
-    const post = await postFinder(req, next);
+//     const post = await postFinder(req, next);
 
-    if (!post) return next(createHttpError(404, "post not found"));
+//     if (!post) return next(createHttpError(404, "post not found"));
 
-    const userId = req.user!.id;
+//     const userId = req.user!.id;
 
-    const isAlreadyLiked = await isLiked({ postId: post.id, userId });
-    if (!isAlreadyLiked) return next(createHttpError(400, "Already unLiked"));
+//     const isAlreadyLiked = await isLiked({ postId: post.id, userId });
+//     if (!isAlreadyLiked) return next(createHttpError(400, "Already unLiked"));
 
-    const updatedPost = await unlikePost({ postId: post.id, userId });
+//     const updatedPost = await unlikePost({ postId: post.id, userId });
 
-    const response = responseFormatter(
-      200,
-      "Successfully unlike post",
-      updatedPost
-    );
-    res.status(200).json(response).end();
-  } catch (err) {
-    next(err);
-  }
-};
+//     const response = responseFormatter(
+//       200,
+//       "Successfully unlike post",
+//       updatedPost
+//     );
+//     res.status(200).json(response).end();
+//   } catch (err) {
+//     next(err);
+//   }
+// };
