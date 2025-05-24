@@ -4,7 +4,6 @@
     "": {
       "name": "mblogsserver",
       "dependencies": {
-        "@prisma/client": "^6.8.1",
         "@typescript-eslint/eslint-plugin": "^8.32.1",
         "@typescript-eslint/parser": "^8.32.1",
         "consola": "^3.4.2",
