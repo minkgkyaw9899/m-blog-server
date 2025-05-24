@@ -45,6 +45,7 @@ export const createOnePost = async (body: CreatePostField, userId: number) => {
         ...body,
         authorId: userId,
       })
+      .onConflictDoNothing()
       .returning();
 
     return user?.[0];
@@ -63,12 +64,16 @@ export const findAllPosts = async ({
   userId,
 }: FinedAllPostsParam) => {
   try {
-    return await db
-      .select({})
+    const posts = await db
+      .select()
       .from(postTables)
       .where(isNull(postTables.deletedAt))
       .limit(limit)
       .offset((page - 1) * limit);
+
+      console.log("posts", posts);
+
+      return posts;
   } catch (err) {
     throw err;
   }

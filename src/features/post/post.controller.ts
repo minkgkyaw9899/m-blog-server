@@ -35,7 +35,7 @@ export const createPostController = async (
 
     if (!post) return next(createHttpError(409, "Failed to create post"));
 
-    const response = responseFormatter(200, "Successfully create post", post);
+    const response = responseFormatter(200, "Successfully create post", omit(post, ['deletedAt']));
 
     res.status(200).json(response);
   } catch (err) {
@@ -59,14 +59,16 @@ export const getAllPostController = async (
 
     const allPosts = await findAllPosts({ page, limit, userId });
 
-    const posts = allPosts.map((post) => ({
-      ...omit(post, ["likes"]),
-    }));
+    console.log("allPosts", allPosts);
+
+    // const posts = allPosts.map((post) => ({
+    //   ...omit(post, ["likes"]),
+    // }));
 
     const response = paginatedResponseFormatter(
       200,
       "Successfully get all posts",
-      posts,
+      allPosts,
       page,
       limit,
       total
