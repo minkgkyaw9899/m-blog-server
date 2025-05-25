@@ -19,15 +19,16 @@ app.use(
     methods: ["GET", "POST", "PATCH", "DELETE"],
   })
 );
+
+app.use(morgan("dev"));
+
+app.use(helmet());
 app.use(
   rateLimit({
     windowMs: 1000 * 60,
     limit: 60,
   })
 );
-
-app.use(helmet());
-app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
