@@ -29,6 +29,13 @@
       "when": 1747384997687,
       "tag": "0003_tan_sentinels",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1748159186673,
+      "tag": "0004_many_major_mapleleaf",
+      "breakpoints": true
     }
   ]
 }

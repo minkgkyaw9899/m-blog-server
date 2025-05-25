@@ -2,6 +2,7 @@ import { db } from "../../db";
 import { commentsTable } from "../../db/schemas/commentsTable";
 import { likesTable } from "../../db/schemas/likesTable";
 import { postTables } from "../../db/schemas/postsTable";
+import { usersTable } from "../../db/schemas/usersTable";
 import type { PaginationField } from "../../utils/pagination.schema";
 import type { CreatePostField, UpdatePostField } from "./post.schema";
 import { and, eq, isNull, ne } from "drizzle-orm";
@@ -64,29 +65,46 @@ export const findAllPosts = async ({
   userId,
 }: FinedAllPostsParam) => {
   try {
-    const posts = await db
-      .select()
-      .from(postTables)
-      .where(isNull(postTables.deletedAt))
-      .limit(limit)
-      .offset((page - 1) * limit);
-
-      console.log("posts", posts);
-
-      return posts;
+    return await db.query.postTables.findMany({
+      where: isNull(postTables.deletedAt),
+      orderBy: (postTables, { desc }) => [desc(postTables.createdAt)],
+      with: {
+        likes: true,
+        comments: true,
+        author: {
+          columns: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+      },
+      limit,
+      offset: (page - 1) * limit,
+    });
   } catch (err) {
     throw err;
   }
 };
 
-export const findPost = async ({
-  postId,
-  userId,
-  showDel = false,
-}: LikePostParam) => {
+export const findPost = async ({ postId, userId }: LikePostParam) => {
   try {
-    await db.$client.connect();
-    return await db.select().from(postTables).where(eq(postTables.id, postId));
+    return await db.query.postTables.findFirst({
+      where: eq(postTables.id, postId),
+      with: {
+        likes:
+          userId !== undefined
+            ? { where: eq(likesTable.userId, userId) }
+            : undefined,
+        author: {
+          columns: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+      },
+    });
   } catch (err) {
     throw err;
   }
@@ -94,12 +112,13 @@ export const findPost = async ({
 
 export const updatePost = async (id: number, body: UpdatePostField) => {
   try {
-    await db.$client.connect();
-    return await db
+    const post = await db
       .update(postTables)
       .set(body)
       .where(eq(postTables.id, id))
       .returning();
+
+    return post?.[0];
   } catch (err) {
     throw err;
   }
@@ -107,12 +126,14 @@ export const updatePost = async (id: number, body: UpdatePostField) => {
 
 export const deletePost = async (id: number) => {
   try {
-    await db.$client.connect();
     return await db
       .update(postTables)
-      .set({ deletedAt: new Date() })
+      .set({
+        deletedAt: new Date(),
+      })
       .where(eq(postTables.id, id))
-      .returning();
+      .returning()
+      .execute();
   } catch (err) {
     throw err;
   }

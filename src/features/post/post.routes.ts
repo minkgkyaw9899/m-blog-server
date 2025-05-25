@@ -4,8 +4,10 @@ import { deserializeUser } from "../../middlewares/deserializeUser";
 import { createPostSchema, updatePostSchema } from "./post.schema";
 import {
   createPostController,
+  deletePostController,
   getAllPostController,
   getPostController,
+  updatePostController,
 } from "./post.controller";
 import { paginationSchema, paramIdSchema } from "../../utils/pagination.schema";
 
@@ -15,11 +17,7 @@ router.get("/", validatorMiddleware(paginationSchema), getAllPostController);
 
 router.post("/", validatorMiddleware(createPostSchema), createPostController);
 
-// router.post(
-//   "/:id/like",
-//   validatorMiddleware(paramIdSchema),
-//   likePostController
-// );
+// router.post("/:id/like", validatorMiddleware(paramIdSchema), getPostController);
 
 // router.post(
 //   "/:id/un-like",
@@ -27,15 +25,15 @@ router.post("/", validatorMiddleware(createPostSchema), createPostController);
 //   unLikePostController
 // );
 
-// router.delete("/:id", validatorMiddleware(paramIdSchema), deletePostController);
+router.delete("/:id", validatorMiddleware(paramIdSchema), deletePostController);
 
-// router.get("/:id", validatorMiddleware(paramIdSchema), getPostController);
+router.get("/:id", validatorMiddleware(paramIdSchema), getPostController);
 
-// router.post(
-//   "/:id",
-//   validatorMiddleware(paramIdSchema),
-//   validatorMiddleware(updatePostSchema),
-//   updatePostController
-// );
+router.patch(
+  "/:id",
+  validatorMiddleware(paramIdSchema),
+  validatorMiddleware(updatePostSchema),
+  updatePostController
+);
 
 export default router;
