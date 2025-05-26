@@ -11,7 +11,6 @@ import { and, eq, isNull, ne } from "drizzle-orm";
 
 export const countPosts = async () => {
   try {
-    await db.$client.connect();
     return await db.$count(postTables, isNull(postTables.deletedAt));
   } catch (err) {
     throw err;
@@ -20,7 +19,6 @@ export const countPosts = async () => {
 
 export const countLikes = async (postId: number) => {
   try {
-    await db.$client.connect();
     return await db.$count(likesTable, eq(likesTable.postId, postId));
   } catch (err) {
     throw err;
@@ -29,7 +27,6 @@ export const countLikes = async (postId: number) => {
 
 export const countComments = async (postId: number) => {
   try {
-    await db.$client.connect();
     return await db.$count(commentsTable, eq(commentsTable.postId, postId));
   } catch (err) {
     throw err;

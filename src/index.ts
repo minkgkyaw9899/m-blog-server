@@ -20,16 +20,18 @@ app.use(
   })
 );
 
+app.disable("etag");
+
 app.use(morgan("dev"));
 
 app.use(helmet());
 app.use(
   rateLimit({
-    windowMs: 1000 * 60,
+    windowMs: 1000,
     limit: 60,
   })
 );
-app.use(express.urlencoded({ extended: true }));
+// app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const prefix = "/api/v1";

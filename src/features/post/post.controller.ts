@@ -56,7 +56,11 @@ export const getAllPostController = async (
     const limit = req.query?.limit ?? 10;
     const page = req.query?.page ?? 1;
 
+
     const total = await countPosts();
+
+    console.log("get allPosts called");
+
 
     const userId = req.user?.id;
     if (!userId) return next(createHttpError(401));
