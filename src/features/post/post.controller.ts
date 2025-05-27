@@ -56,11 +56,7 @@ export const getAllPostController = async (
     const limit = req.query?.limit ?? 10;
     const page = req.query?.page ?? 1;
 
-
     const total = await countPosts();
-
-    console.log("get allPosts called");
-
 
     const userId = req.user?.id;
     if (!userId) return next(createHttpError(401));
@@ -116,10 +112,19 @@ export const getPostController = async (
     if (!post || post.deletedAt !== null)
       return next(createHttpError(404, "Post not found"));
 
-    const isLiked = post?.likes.length > 0 ? true : false;
+    const totalLikes = post?.likes.length;
+
+    const totalComments = post?.comments.length;
+
+    const isLiked = !!post.likes.find((like) => like.userId === req.user?.id);
 
     const response = responseFormatter(200, "Successfully get post", {
-      ...omit({ ...post, isLiked }, ["likes", "deletedAt"]),
+      ...omit({ ...post, isLiked, totalLikes, totalComments }, [
+        "likes",
+        "deletedAt",
+        "authorId",
+        "comments",
+      ]),
     });
 
     res.status(200).json(response);

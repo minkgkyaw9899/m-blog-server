@@ -36,9 +36,10 @@ export const paginatedResponseFormatter = <
     meta: {
       status,
       message,
-      limit,
+      limit: +limit,
+      current: data ? data.length : 0,
       total,
-      page,
+      page: +page,
       hasNextPage: page * limit < total,
       totalPages: Math.ceil(total / limit),
     },

@@ -89,10 +89,8 @@ export const findPost = async ({ postId, userId }: LikePostParam) => {
     return await db.query.postTables.findFirst({
       where: eq(postTables.id, postId),
       with: {
-        likes:
-          userId !== undefined
-            ? { where: eq(likesTable.userId, userId) }
-            : undefined,
+        likes: true,
+        comments: true,
         author: {
           columns: {
             id: true,
